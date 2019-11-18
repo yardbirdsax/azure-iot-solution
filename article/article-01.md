@@ -30,25 +30,25 @@ az iot hub device-identity show-connection-string  -d iotsim -n jefiotlabiothub
 
 This will show a connection string that is used within the various client libraries available (of which there are numerous).
 
-![](images\2019-11-10T15_23_00.png)
+![](images/2019-11-10T15_23_00.png)
 
 You also must create **Shared Access Policies** to allow downstream applications, such as Azure Stream Analytics or Azure Functions, access to consume device messages. In the case of this example, the Terraform template already created one called "streamanalytics", which was granted the **Service Connect** permission, allowing it to read messages from the hub. For a list of all the permissions that are possible to grant, see [this](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-security#iot-hub-permissions).
 
 >**TIP: Don't ever use the built in `iothubowner` policy, as that grants essentially unlimited permissions to the hub. Also, create one policy per consuming application so that you can easily rotate the access keys without having to replace them in a large number of places.**
 
-![](images\2019-11-10T15_29_52.png)
+![](images/2019-11-10T15_29_52.png)
 
 When consuming messages, you want to configure different **Consumer Groups** for each application that reads messages. This allows each to independently operate for purposes such as tracking where in the message stream they are. In our example, the deployment created a `streamanalytics` Consumer Group, since that's what will be reading the messages.
 
-![](images\2019-11-10T15_35_24.png)
+![](images/2019-11-10T15_35_24.png)
 
 Finally, there's the concept of **routing**, which determines where messages get, well, routed! This allows you to send messages to multiple endpoints, such as Azure Event Hub compatible ones, Service Bus Queues, and Azure Storage. The latter is very useful for capturing and storing raw data into a data lake, which is why we've configured it here.
 
-![](images\2019-11-10T15_40_21.png)
+![](images/2019-11-10T15_40_21.png)
 
 When configuring a Storage endpoint, you can configure the way in which the files are created in terms of folder structure. You can also configure things like how often files are written, as well as how large of a batch must come through before it is written to the storage account.
 
-![](images\2019-11-10T15_41_48.png)
+![](images/2019-11-10T15_41_48.png)
 
 >**TIP: To get full featured later use of the data, make sure the storage account you configure is enabled for [Azure Data Lake Storage Gen2](https://docs.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-namespace). Also, make sure the path and name for the file are easily sortable; for example, you might ensure that the path starts with the year, then month, then day, etc.**
 
@@ -68,11 +68,11 @@ In our case, there are three main parts of the Stream Analytics deployment: an i
 
 Inputs define where Stream Analytics gets its data to process. In our case, we've defined the input as the Azure IoT Hub that was created as part of our deployment.
 
-![](images\2019-11-16T17_03_48.png)
+![](images/2019-11-16T17_03_48.png)
 
 Because this resource was created via an automated deployment, all of the information used to connect to the IoT Hub is already entered. As previously noted, you should always create a specific shared access policy specifically for the Stream Analytics connection, rather than using the built in high privilege one (or any of the other pre-existing ones). You also want to ensure a specific consumer group is created as well. By clicking the "Test" button, we can confirm everything is working properly.
 
-![](images\2019-11-18T10_07_53.png)
+![](images/2019-11-18T10_07_53.png)
 
 Azure Stream Analytics also supports accepting data from Azure Blob Storage and Azure Event Hubs as well. For more details on the different kinds of streaming inputs, see [this Microsoft documentation](https://docs.microsoft.com/en-us/azure/stream-analytics/stream-analytics-define-inputs).
 
@@ -84,7 +84,7 @@ Azure Stream Analytics supports a multitude of outputs for the data it produces,
 
 In our case, we've configured a single output to Azure Event Hubs, which is used as a destination for detected anomalies. As with the input, it's wise to use a specific authorization policy to allow the Stream Analytics job to connect to the Event Hub.
 
-![](images\2019-11-18T10_36_24.png)
+![](images/2019-11-18T10_36_24.png)
 
 Note that there is one property that we must set manually, as the Terraform provider doesn't currently (as of November 2019) support it, which is the **Partition key column**. It's important to set this properly, to ensure that groups of related events always end up in the same partition, so that they can be processed in order. In our case, a logical choice would be the `device` column, since that way we ensure that all the events from a particular device end up in the same partition.
 
@@ -152,13 +152,13 @@ First, we must simulate an IoT device sending data to the Azure IoT Hub. I've bu
 
 Next, we need to start up the Stream Analytics job. This can be done either through the portal.
 
-![](images\2019-11-18T14_03_47.png)
+![](images/2019-11-18T14_03_47.png)
 
 You can select "Now" for the start time, so the job will consume data starting from the current date and time.
 
 From the `Query` pane, you can click the `Test Query Results` button to see sample output of the query.
 
-![](images\2019-11-18T14_11_11.png)
+![](images/2019-11-18T14_11_11.png)
 
 >**NOTE: Because only anomalies are shown, you may not actually see any results. You can always repeat the step after the next action, where we introduce anomalous data on purpose.**
 
@@ -179,11 +179,11 @@ First, exit the container process, then re-run it specifying some additional opt
 
 To show that the output is reaching the Event Hub, we can browse to the `Metrics` panel of the Event Hub Namespace resource, and view the `Incoming Messages` metric. Make sure you select 30 minutes as your time window to get the best view, and you may need to hit the Refresh button several times.
 
-![](images\2019-11-18T14_44_13.png)
+![](images/2019-11-18T14_44_13.png)
 
-![](images\2019-11-18T14_43_36.png)
+![](images/2019-11-18T14_43_36.png)
 
-![](images\2019-11-18T14_44_55.png)
+![](images/2019-11-18T14_44_55.png)
 
 ## Summary and To-Dos
 
