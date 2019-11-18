@@ -1,0 +1,12 @@
+{
+    "files.eol": "\n",
+    "editor.tabSize": 2,
+    "yaml.schemas": {
+        "kubernetes":"/charts/**/templates/*.yaml"
+    },
+    "azureFunctions.deploySubpath": "slackalerter/bin/Release/netcoreapp2.1/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~2",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "publish"
+}
